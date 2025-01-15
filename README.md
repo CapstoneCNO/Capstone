@@ -10,3 +10,7 @@ Members
     Name: Alejandra Carolina González González
     Student #: 300262719
     Email: agonz024@uottawa.ca
+
+    Name: Omar Ouadouha
+    Student #: 300263227
+    Email: oouad032@uottawa.ca
