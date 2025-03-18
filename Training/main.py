@@ -1,13 +1,20 @@
 import shutil
 from pathlib import Path
 
-from provided_code import DataLoader, DoseEvaluator, PredictionModel, get_paths
+from provided_code.data_loader import DataLoader
+from provided_code.dose_evaluation_class import DoseEvaluator
+from provided_code.network_functions import PredictionModel
+from provided_code.utils import get_paths
+import time
+
+from csv_to_image_slices import convert_patient_to_images
+from display_3d import display
 
 if __name__ == "__main__":
 
-    prediction_name = "baseline"  # Name model to train and number of epochs to train it for
+    prediction_name = "test"  # Name model to train and number of epochs to train it for
     test_time = False  # Only change this to True when the model has been fully tuned on the validation set
-    num_epochs = 2  # This should probably be increased to 100-200 after your dry run
+    num_epochs = 1  # This should probably be increased to 100-200 after your dry run
 
     # Define project directories
     primary_directory = Path().resolve()  # directory where everything is stored
@@ -20,10 +27,12 @@ if __name__ == "__main__":
     # Prepare the data directory
     training_plan_paths = get_paths(training_data_dir)  # gets the path of each plan's directory
 
+    t = time.time()
     # Train a model
     data_loader_train = DataLoader(training_plan_paths)
     dose_prediction_model_train = PredictionModel(data_loader_train, results_dir, prediction_name, "train")
     dose_prediction_model_train.train_model(num_epochs, save_frequency=1, keep_model_history=20)
+    print(time.time() - t)
 
     # Define hold out set
     hold_out_data_dir = validation_data_dir if test_time is False else testing_data_dir
@@ -53,3 +62,15 @@ if __name__ == "__main__":
     submission_dir = results_dir / "submissions"
     submission_dir.mkdir(exist_ok=True)
     shutil.make_archive(str(submission_dir / prediction_name), "zip", dose_prediction_model_hold_out.prediction_dir)
+
+    # Convert a patient's data into images for displaying
+    displayed_patient = 202 # (allowed range: 201-240)
+    patient_dir=f"./provided-data/validation-pats/pt_{displayed_patient}/"
+    output_dir=f"./pt_{displayed_patient}_images/"
+    prediction_path=f"./results/{prediction_name}/validation-predictions/pt_{displayed_patient}.csv"
+    
+    convert_patient_to_images(patient_dir, output_dir, prediction_path)
+
+    # Display ui to compare ct, ground truth dose, and predicted dose
+    patient_folder = output_dir
+    display(patient_folder)

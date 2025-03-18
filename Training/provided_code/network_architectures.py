@@ -1,11 +1,11 @@
 """ Neural net architectures """
 from typing import Optional
 
-from keras.engine.keras_tensor import KerasTensor
+from tensorflow.python.keras.engine import keras_tensor
 from keras.layers import Activation, AveragePooling3D, Conv3D, Conv3DTranspose, Input, LeakyReLU, SpatialDropout3D, concatenate
-from keras.layers.normalization.batch_normalization import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization
 from keras.models import Model
-from keras.optimizers.optimizer_v2.optimizer_v2 import OptimizerV2
+from tensorflow.python.keras.optimizer_v2 import optimizer_v2
 
 from provided_code.data_shapes import DataShapes
 
@@ -20,7 +20,7 @@ class DefineDoseFromCT:
         initial_number_of_filters: int,
         filter_size: tuple[int, int, int],
         stride_size: tuple[int, int, int],
-        gen_optimizer: OptimizerV2,
+        gen_optimizer: optimizer_v2.OptimizerV2,
     ):
         self.data_shapes = data_shapes
         self.initial_number_of_filters = initial_number_of_filters
@@ -28,7 +28,7 @@ class DefineDoseFromCT:
         self.stride_size = stride_size
         self.gen_optimizer = gen_optimizer
 
-    def make_convolution_block(self, x: KerasTensor, num_filters: int, use_batch_norm: bool = True) -> KerasTensor:
+    def make_convolution_block(self, x: keras_tensor.KerasTensor, num_filters: int, use_batch_norm: bool = True) -> keras_tensor.KerasTensor:
         x = Conv3D(num_filters, self.filter_size, strides=self.stride_size, padding="same", use_bias=False)(x)
         if use_batch_norm:
             x = BatchNormalization(momentum=0.99, epsilon=1e-3)(x)
@@ -36,8 +36,8 @@ class DefineDoseFromCT:
         return x
 
     def make_convolution_transpose_block(
-        self, x: KerasTensor, num_filters: int, use_dropout: bool = True, skip_x: Optional[KerasTensor] = None
-    ) -> KerasTensor:
+        self, x: keras_tensor.KerasTensor, num_filters: int, use_dropout: bool = True, skip_x: Optional[keras_tensor.KerasTensor] = None
+    ) -> keras_tensor.KerasTensor:
         if skip_x is not None:
             x = concatenate([x, skip_x])
         x = Conv3DTranspose(num_filters, self.filter_size, strides=self.stride_size, padding="same", use_bias=False)(x)
