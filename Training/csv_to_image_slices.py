@@ -109,7 +109,9 @@ def save_as_png_slices(tensor, output_dir, prefix, colormap='viridis', normalize
 
     # Save slices
     for i in range(tensor.shape[2]):
-        slice_img = tensor[:, :, i]
+        slice_img = tensor[i,:,:]   # view from the top
+        #slice_img = tensor[:,i,:]  # view from the right
+        #slice_img = tensor[:,:,i]  # view from the front
 
         # Create a new figure and axes for each slice
         fig, ax = plt.subplots(figsize=(5, 5))

@@ -9,13 +9,13 @@ index = 0
 def display(patient_folder):
 
     # load images
-    ct_image_files = sorted(glob.glob(patient_folder + "ct/*slice*.png"))
+    ct_image_files = sorted(glob.glob(patient_folder + "/ct/*slice*.png"))
     ct_images = [cv2.cvtColor(cv2.imread(img, cv2.IMREAD_GRAYSCALE), cv2.COLOR_GRAY2RGB) for img in ct_image_files]
 
-    dose_image_files = sorted(glob.glob(patient_folder + "dose/*slice*.png"))
+    dose_image_files = sorted(glob.glob(patient_folder + "/dose/*slice*.png"))
     dose_images = [cv2.cvtColor(cv2.imread(img, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB) for img in dose_image_files]
 
-    prediction_image_files = sorted(glob.glob(patient_folder + "prediction/*slice*.png"))
+    prediction_image_files = sorted(glob.glob(patient_folder + "/prediction/*slice*.png"))
     prediction_images = [cv2.cvtColor(cv2.imread(img, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB) for img in prediction_image_files]
 
     num_slices = 128
