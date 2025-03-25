@@ -21,8 +21,6 @@ class DefineDoseFromCT(nn.Module):
         self.stride_size = stride_size
 
         # Determine input channels.
-        # Assuming data_shapes.ct and data_shapes.structure_masks are given as (D, H, W, C)
-        # so that the number of channels is the last element.
         ct_channels = data_shapes.ct[-1]
         mask_channels = data_shapes.structure_masks[-1]
         in_channels = ct_channels + mask_channels
@@ -53,7 +51,7 @@ class DefineDoseFromCT(nn.Module):
             nn.BatchNorm3d(8 * initial_number_of_filters, eps=1e-3, momentum=0.99),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
         )
-        # Note: No batch normalization in the last encoder layer per the original code.
+        # Note: No batch normalization in the last encoder layer
         self.conv6 = nn.Sequential(
             nn.Conv3d(8 * initial_number_of_filters, 8 * initial_number_of_filters, kernel_size=filter_size, stride=stride_size, padding=padding_size, bias=False),
             nn.LeakyReLU(negative_slope=0.2, inplace=True)
@@ -97,7 +95,6 @@ class DefineDoseFromCT(nn.Module):
         self.final_activation = nn.ReLU()
 
     def forward(self, ct_image, roi_masks):
-        # Concatenate the CT image and ROI masks along the channel dimension.
         x = torch.cat([ct_image, roi_masks], dim=1)
         x1 = self.conv1(x)
         x2 = self.conv2(x1)

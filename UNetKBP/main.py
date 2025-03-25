@@ -13,12 +13,12 @@ from display_3d import display
 
 if __name__ == "__main__":
 
-    prediction_name = "pytorch"  # Name model to train and number of epochs to train it for
+    prediction_name = "pytorch"
     test_time = False  # Only change this to True when the model has been fully tuned on the validation set
-    num_epochs = 200  # This should probably be increased to 100-200 after your dry run
+    num_epochs = 200
 
     # Define project directories
-    primary_directory = Path().resolve()  # directory where everything is stored
+    primary_directory = Path().resolve()
     provided_data_dir = primary_directory / "provided-data"
     training_data_dir = provided_data_dir / "train-pats"
     validation_data_dir = provided_data_dir / "validation-pats"
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     # Prepare the data directory
     training_plan_paths = get_paths(training_data_dir)  # gets the path of each plan's directory
 
+    # Train model
     t = time.time()
-    # Train a model
     data_loader_train = DataLoader(training_plan_paths)
     dose_prediction_model_train = PredictionModel(data_loader_train, results_dir, prediction_name, "train")
     dose_prediction_model_train.train_model(num_epochs, save_frequency=1, keep_model_history=5)
@@ -45,13 +45,13 @@ if __name__ == "__main__":
     dose_prediction_model_hold_out = PredictionModel(data_loader_hold_out, results_dir, model_name=prediction_name, stage=stage_name)
     dose_prediction_model_hold_out.predict_dose(epoch=num_epochs)
 
-    # Evaluate dose metrics
+    # Evaluate dose metrics (dose score and DVH score)
     data_loader_hold_out_eval = DataLoader(hold_out_plan_paths)
     prediction_paths = get_paths(dose_prediction_model_hold_out.prediction_dir, extension="csv")
     hold_out_prediction_loader = DataLoader(prediction_paths)
     dose_evaluator = DoseEvaluator(data_loader_hold_out_eval, hold_out_prediction_loader)
 
-    # print out scores if data was left for a hold out set
+    # Print out scores only if data was left for a hold out set
     if not data_loader_hold_out_eval.patient_paths:
         print("No patient information was given to calculate metrics")
     else:
@@ -59,17 +59,11 @@ if __name__ == "__main__":
         dose_score, dvh_score = dose_evaluator.get_scores()
         print(f"For this out-of-sample test on {stage_name}:\n\tthe DVH score is {dvh_score:.3f}\n\tthe dose score is {dose_score:.3f}")
 
-    # Zip dose to submit
-    submission_dir = results_dir / "submissions"
-    submission_dir.mkdir(exist_ok=True)
-    shutil.make_archive(str(submission_dir / prediction_name), "zip", dose_prediction_model_hold_out.prediction_dir)
-
-    # Convert a patient's data into images for displaying
+    # Convert a patient's data into images for displaying results
     displayed_patient = 201 # (allowed range: 201-240)
     patient_dir=f"./provided-data/validation-pats/pt_{displayed_patient}/"
     output_dir=f"./pt_{displayed_patient}_images/"
     prediction_path=f"./results/{prediction_name}/validation-predictions/pt_{displayed_patient}.csv"
-    
     convert_patient_to_images(patient_dir, output_dir, prediction_path)
 
     # Display ui to compare ct, ground truth dose, and predicted dose
