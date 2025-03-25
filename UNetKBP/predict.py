@@ -14,7 +14,7 @@ prediction_name = "pytorch"
 epoch=200
 stage="coarse"
 results_dir = Path('results')
-num_patients = 2
+num_patients = 1
 
 # Predicts patient's doses using ct scans and structure masks
 # Makes a prediction for the first num_patients patients in patients_dir
