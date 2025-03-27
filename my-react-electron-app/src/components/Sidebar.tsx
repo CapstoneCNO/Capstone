@@ -46,7 +46,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
 
       {visible && (
         <>
-          <span className="text-muted small mb-2">{t("language")}</span>
+          <span className="text-muted small mb-2"></span>
           <Form.Control
             type="search"
             placeholder={t("search_placeholder")}
