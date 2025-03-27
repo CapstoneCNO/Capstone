@@ -1,0 +1,21 @@
+# Python virtual environments
+venv/
+env/
+
+# Node.js dependencies
+node_modules/
+
+# Build and dist folders
+build/
+dist/
+out/
+
+# System/IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and environment
+*.log
+.env
