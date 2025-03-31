@@ -1,0 +1,8 @@
+config_param:
+  act: mish
+  delta1: 10
+  delta2: 8
+  lr: 0.0006130697604327541
+  multiS_conv: true
+  weight_decay: 0.00016303111017674179
+freeze: true

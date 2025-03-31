@@ -1,0 +1,10 @@
+checkpoints/
+mlruns/
+myenv/
+PretrainedModels/
+private-data/
+provided-data/
+provided-data-csv/
+YourSampleImages/
+images/
+OARSegmentation/OldModels
