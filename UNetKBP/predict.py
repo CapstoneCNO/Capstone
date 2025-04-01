@@ -51,9 +51,7 @@ def predict_with_masks(patients_dir, output_dir):
         #display(output_dirs[i])
         start = time.time()
 
-
 if __name__ == "__main__":
-
     # example use
     patients_dir = 'provided-data/train-pats'
     output_dir = 'predictions'

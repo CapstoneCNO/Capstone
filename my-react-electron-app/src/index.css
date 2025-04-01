@@ -1,0 +1,64 @@
+/* Sidebar layout */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background-color: #f8f9fc;
+  border-right: 1px solid #dee2e6;
+}
+
+/* Search bar */
+.search-bar {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+}
+
+/* Nav links */
+.sidebar .nav-link {
+  font-size: 0.95rem;
+  padding: 6px 12px;
+  transition: all 0.2s ease-in-out;
+  border-radius: 6px;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #e9ecef;
+  text-decoration: none;
+  color: #000;
+}
+
+/* Top bar */
+.topbar {
+  height: 56px;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Responsive fix */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.sidebar {
+  width: 260px;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 60px;               
+  padding: 1rem 0.5rem;       
+  overflow: hidden;
+  align-items: center;        
+}
+.patient-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.patient-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
