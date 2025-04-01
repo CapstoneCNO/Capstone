@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Slider from '@mui/material/Slider';
+import Button from '@mui/material/Button'; // Import Button from MUI
 
 interface ImageUrls {
   ct: string[];
@@ -9,14 +10,13 @@ interface ImageUrls {
 }
 
 const PatientPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Correctly typed useParams
+  const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [imageUrls, setImageUrls] = useState<ImageUrls>({ ct: [], dose: [], prediction: [] });
   const [index, setIndex] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [predicting, setPredicting] = useState<boolean>(false);
 
-  // Fetch images for patient on mount
   useEffect(() => {
     const fetchImageUrls = async () => {
       try {
@@ -36,35 +36,30 @@ const PatientPage: React.FC = () => {
     fetchImageUrls();
   }, [id]);
 
-// Handle prediction button click
-const handlePredict = async () => {
-  setPredicting(true);
-  try {
-    const response = await fetch('/api/prediction', { method: 'GET' });
-    const data = await response.json();
-    if (response.ok) {
-      alert('Prediction complete!');
-      
-      // Fetch updated image URLs after prediction and set them using setImageUrls
-      const imageResponse = await fetch(`/api/images/${id}`);
-      if (!imageResponse.ok) {
-        throw new Error('Failed to load images');
+  const handlePredict = async () => {
+    setPredicting(true);
+    try {
+      const response = await fetch('/api/prediction', { method: 'GET' });
+      if (response.ok) {
+        const data = await response.json();
+        alert('Prediction complete!');
+        const imageResponse = await fetch(`/api/images/${id}`);
+        if (!imageResponse.ok) {
+          throw new Error('Failed to load images');
+        }
+        const imageData: ImageUrls = await imageResponse.json();
+        setImageUrls(imageData);
+      } else {
+        const data = await response.json();
+        alert(`Prediction failed: ${data.error}`);
       }
-      const imageData: ImageUrls = await imageResponse.json();
-      setImageUrls(imageData); // Update image URLs in the state
-
-    } else {
-      alert(`Prediction failed: ${data.error}`);
+    } catch (error) {
+      alert('An error occurred during prediction.');
+    } finally {
+      setPredicting(false);
     }
-  } catch (error) {
-    alert('An error occurred during prediction.');
-  } finally {
-    setPredicting(false);
-  }
-};
+  };
 
-
-  // Slider change handler
   const handleSliderChange = (newValue: number) => {
     setIndex(newValue);
   };
@@ -80,13 +75,6 @@ const handlePredict = async () => {
   return (
     <div>
       <h2>Patient: {id}</h2>
-
-      {/* Predict Button */}
-      <button onClick={handlePredict} disabled={predicting}>
-        {predicting ? 'Predicting...' : 'Predict'}
-      </button>
-
-      {/* Display images based on the current index */}
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         {imageUrls.ct[index] && (
           <div style={{ width: '30%', textAlign: 'center' }}>
@@ -108,7 +96,6 @@ const handlePredict = async () => {
         )}
       </div>
 
-      {/* Slider for scrolling through slices */}
       <Slider
         value={index}
         min={0}
@@ -118,6 +105,19 @@ const handlePredict = async () => {
         valueLabelDisplay="auto"
         valueLabelFormat={(value) => `Slice ${value + 1}`}
       />
+
+      {/* Predict Button */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <Button
+          onClick={handlePredict}
+          disabled={predicting}
+          variant="contained"
+          color="primary"
+          size="large"
+        >
+          {predicting ? 'Predicting...' : 'Predict'}
+        </Button>
+      </div>
     </div>
   );
 };
