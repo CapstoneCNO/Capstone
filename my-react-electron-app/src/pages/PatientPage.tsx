@@ -1,35 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Slider from '@mui/material/Slider';
 
-const PatientPage = () => {
-  const { id } = useParams(); // Get the dynamic patient ID from the URL
-  const [loading, setLoading] = useState(true);
-  const [imageUrls, setImageUrls] = useState<any>(null);
-  const [index, setIndex] = useState(0);
+interface ImageUrls {
+  ct: string[];
+  dose: string[];
+  prediction: string[];
+}
+
+const PatientPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // Correctly typed useParams
+  const [loading, setLoading] = useState<boolean>(true);
+  const [imageUrls, setImageUrls] = useState<ImageUrls>({ ct: [], dose: [], prediction: [] });
+  const [index, setIndex] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [predicting, setPredicting] = useState<boolean>(false);
 
+  // Fetch images for patient on mount
   useEffect(() => {
-    // Dynamically generate paths for the CT, dose, and prediction images
-    const ctImages = [];
-    const doseImages = [];
-    const predictionImages = [];
+    const fetchImageUrls = async () => {
+      try {
+        const response = await fetch(`/api/images/${id}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: ImageUrls = await response.json();
+        setImageUrls(data);
+        setLoading(false);
+      } catch (error) {
+        setError('Failed to load images');
+        setLoading(false);
+      }
+    };
 
-    // Loop to generate image URLs for slices (assuming 128 slices per patient)
-    for (let i = 0; i < 128; i++) {
-      // Format the slice index to be zero-padded (001, 002, etc.)
-      const formattedIndex = (i + 1).toString().padStart(3, '0');
-      
-      // Access images directly from public folder
-      ctImages.push(`/predictions/${id}-images/ct/ct_slice_${formattedIndex}.png`);
-      doseImages.push(`/predictions/${id}-images/dose/dose_slice_${formattedIndex}.png`);
-      predictionImages.push(`/predictions/${id}-images/prediction/prediction_slice_${formattedIndex}.png`);
-    }
-
-    // Set the image URLs after loading them
-    setImageUrls({ ct: ctImages, dose: doseImages, prediction: predictionImages });
-    setLoading(false);
+    fetchImageUrls();
   }, [id]);
+
+// Handle prediction button click
+const handlePredict = async () => {
+  setPredicting(true);
+  try {
+    const response = await fetch('/api/prediction', { method: 'GET' });
+    const data = await response.json();
+    if (response.ok) {
+      alert('Prediction complete!');
+      
+      // Fetch updated image URLs after prediction and set them using setImageUrls
+      const imageResponse = await fetch(`/api/images/${id}`);
+      if (!imageResponse.ok) {
+        throw new Error('Failed to load images');
+      }
+      const imageData: ImageUrls = await imageResponse.json();
+      setImageUrls(imageData); // Update image URLs in the state
+
+    } else {
+      alert(`Prediction failed: ${data.error}`);
+    }
+  } catch (error) {
+    alert('An error occurred during prediction.');
+  } finally {
+    setPredicting(false);
+  }
+};
+
+
+  // Slider change handler
+  const handleSliderChange = (newValue: number) => {
+    setIndex(newValue);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -39,32 +77,33 @@ const PatientPage = () => {
     return <div>{error}</div>;
   }
 
-  const handleSliderChange = (event: any, newValue: number) => {
-    setIndex(newValue);  // Update the slider index
-  };
-
   return (
     <div>
-      <h2> Patient: {id}</h2>
+      <h2>Patient: {id}</h2>
+
+      {/* Predict Button */}
+      <button onClick={handlePredict} disabled={predicting}>
+        {predicting ? 'Predicting...' : 'Predict'}
+      </button>
 
       {/* Display images based on the current index */}
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-        {imageUrls?.ct?.length > 0 && (
+        {imageUrls.ct[index] && (
           <div style={{ width: '30%', textAlign: 'center' }}>
             <h3>CT Images:</h3>
-            <img src={imageUrls.ct[index]} alt={`CT slice ${index + 1}`} style={{ width: '100%' }} />
+            <img src={`http://localhost:5000${imageUrls.ct[index]}`} alt={`CT slice ${index + 1}`} style={{ width: '100%' }} />
           </div>
         )}
-        {imageUrls?.dose?.length > 0 && (
+        {imageUrls.dose[index] && (
           <div style={{ width: '30%', textAlign: 'center' }}>
             <h3>Dose Images:</h3>
-            <img src={imageUrls.dose[index]} alt={`Dose slice ${index + 1}`} style={{ width: '100%' }} />
+            <img src={`http://localhost:5000${imageUrls.dose[index]}`} alt={`Dose slice ${index + 1}`} style={{ width: '100%' }} />
           </div>
         )}
-        {imageUrls?.prediction?.length > 0 && (
+        {imageUrls.prediction[index] && (
           <div style={{ width: '30%', textAlign: 'center' }}>
             <h3>Prediction Images:</h3>
-            <img src={imageUrls.prediction[index]} alt={`Prediction slice ${index + 1}`} style={{ width: '100%' }} />
+            <img src={`http://localhost:5000${imageUrls.prediction[index]}`} alt={`Prediction slice ${index + 1}`} style={{ width: '100%' }} />
           </div>
         )}
       </div>
@@ -73,9 +112,9 @@ const PatientPage = () => {
       <Slider
         value={index}
         min={0}
-        max={127}  // Adjust this based on the number of slices (128 slices in this case)
+        max={imageUrls.ct.length - 1}
         step={1}
-        onChange={handleSliderChange}
+        onChange={(_, newValue) => handleSliderChange(newValue as number)}
         valueLabelDisplay="auto"
         valueLabelFormat={(value) => `Slice ${value + 1}`}
       />

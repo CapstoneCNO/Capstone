@@ -1,9 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var electron_1 = require("electron");
-var path = require("path");
+import { app, BrowserWindow } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+// ESM-compatible __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 function createWindow() {
-    var win = new electron_1.BrowserWindow({
+    const win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
@@ -17,4 +20,4 @@ function createWindow() {
         win.loadFile(path.join(__dirname, '../dist/index.html'));
     }
 }
-electron_1.app.whenReady().then(createWindow);
+app.whenReady().then(createWindow);
