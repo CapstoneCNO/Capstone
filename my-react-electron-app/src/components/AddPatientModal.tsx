@@ -1,24 +1,30 @@
+// React Bootstrap components for layout/styling
 import { Modal, Form, Button } from "react-bootstrap";
+// useState hook to manage form state
 import { useState } from "react";
-import { useLanguage } from "../hooks/LanguageContext"; // Adjust path if needed
+// Import translation hook
+import { useLanguage } from "../hooks/LanguageContext";
 
+// Props expected by this component
 interface Props {
-  show: boolean;
-  onClose: () => void;
-  onAddPatient: (fullName: string) => void;
+  show: boolean;                    // Whether the modal is visible
+  onClose: () => void;             // Function to close the modal
+  onAddPatient: (fullName: string) => void; // Function to add a new patient
 }
 
+// Functional component for adding a patient via modal form
 const AddPatientModal: React.FC<Props> = ({ show, onClose, onAddPatient }) => {
-  const { t } = useLanguage(); // Translation function
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const { t } = useLanguage(); // Access translation function
+  const [firstName, setFirstName] = useState(""); // Local state for first name
+  const [lastName, setLastName] = useState("");   // Local state for last name
 
+  // Handles form submission
   const handleSubmit = () => {
-    if (!firstName || !lastName) return;
-    onAddPatient(`${lastName}, ${firstName}`);
-    setFirstName("");
+    if (!firstName || !lastName) return; // Prevent submission if fields are empty
+    onAddPatient(`${lastName}, ${firstName}`);    // Pass formatted full name to parent
+    setFirstName(""); // Clear form after submission
     setLastName("");
-    onClose();
+    onClose();         // Close modal
   };
 
   return (
@@ -27,12 +33,14 @@ const AddPatientModal: React.FC<Props> = ({ show, onClose, onAddPatient }) => {
       onHide={onClose}
       centered
       backdrop="static"
-      dialogClassName="custom-modal"
+      dialogClassName="custom-modal" // Optional custom styling
     >
+      {/* Modal header */}
       <Modal.Header closeButton className="bg-navy text-white">
         <Modal.Title>{t("register_patient")}</Modal.Title>
       </Modal.Header>
 
+      {/* Modal body containing the form */}
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
@@ -56,6 +64,7 @@ const AddPatientModal: React.FC<Props> = ({ show, onClose, onAddPatient }) => {
         </Form>
       </Modal.Body>
 
+      {/* Modal footer with action buttons */}
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
           {t("cancel")}

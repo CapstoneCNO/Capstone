@@ -1,4 +1,6 @@
+// React and hooks
 import { useState } from "react";
+// UI components from React Bootstrap
 import {
   Nav,
   Form,
@@ -6,17 +8,23 @@ import {
   Tooltip,
   Collapse,
 } from "react-bootstrap";
+// Routing for navigation
 import { NavLink } from "react-router-dom";
+// Context hook for i18n translations
 import { useLanguage } from "../hooks/LanguageContext";
+// Modal component to add a new patient
 import AddPatientModal from "./AddPatientModal";
+// Global styles
 import "../index.css";
 
+// Sidebar component receives a `visible` prop to determine if sidebar should expand or collapse
 const Sidebar = ({ visible }: { visible: boolean }) => {
-  const { t } = useLanguage();
-  const [patientsOpen, setPatientsOpen] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useLanguage(); // Translation hook
+  const [patientsOpen, setPatientsOpen] = useState(true); // Toggle patient list open/closed
+  const [showAddModal, setShowAddModal] = useState(false); // Controls visibility of AddPatientModal
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Mobile menu toggle
 
+  // Initial patient list
   const [patientList, setPatientList] = useState<string[]>([
     "Beaulieu, Nick",
     "Oudououha, Omar",
@@ -24,13 +32,14 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
     "González, Carolina",
   ]);
 
+  // Function to add a new patient to the list
   const handleAddPatient = (fullName: string) => {
     setPatientList((prev) => [...prev, fullName]);
   };
 
   return (
     <>
-      {/* Mobile hamburger */}
+      {/* Mobile hamburger button */}
       <div className="d-md-none position-fixed top-0 start-0 p-2 z-3">
         <button
           className="icon-button"
@@ -40,7 +49,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile sidebar menu */}
       <Collapse in={mobileMenuOpen} dimension="height">
         <div className="bg-navy-custom d-md-none p-3 shadow-sm position-absolute w-100 z-2 text-white">
           <h5 className="fw-bold mb-3 text-center">ContourCT</h5>
@@ -51,11 +60,13 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           />
 
           <Nav className="flex-column">
+            {/* Home nav item (mobile) */}
             <div className="nav-item-custom d-flex align-items-center gap-2 mb-3">
               <i className="bi bi-house nav-icon"></i>
               <span className="nav-text">{t("home")}</span>
             </div>
 
+            {/* Patients nav + add button (mobile) */}
             <div className="d-flex align-items-center justify-content-between mb-2">
               <div
                 className="nav-item-custom d-flex align-items-center gap-2 fw-semibold"
@@ -74,6 +85,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
               </button>
             </div>
 
+            {/* List of patients (mobile) */}
             <Collapse in={patientsOpen}>
               <div className="ps-4">
                 {patientList.map((name, index) => (
@@ -111,7 +123,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           minHeight: "100vh",
         }}
       >
-        {/* Logo and Toggle (hamburger on left now) */}
+        {/* Logo and toggle button */}
         <div className="d-flex align-items-center mb-3 w-100 gap-2">
           <button
             className="icon-button"
@@ -124,6 +136,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           {visible && <h5 className="fw-bold mb-0 text-white">ContourCT</h5>}
         </div>
 
+        {/* Search bar (desktop only when visible) */}
         {visible && (
           <Form.Control
             type="search"
@@ -132,7 +145,9 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           />
         )}
 
+        {/* Navigation links */}
         <Nav className="flex-column w-100">
+          {/* Home nav link (desktop) with tooltip */}
           <OverlayTrigger
             placement="right"
             overlay={<Tooltip id="home-tooltip">{t("home")}</Tooltip>}
@@ -155,6 +170,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
             </NavLink>
           </OverlayTrigger>
 
+          {/* Patients title + buttons */}
           <div
             className={`nav-item-custom fw-semibold mb-2 d-flex align-items-center ${
               visible ? "ps-3 justify-content-start" : "justify-content-center"
@@ -162,6 +178,8 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           >
             <i className="bi bi-person-lines-fill nav-icon me-2"></i>
             {visible && <span className="nav-text">{t("patients")}</span>}
+
+            {/* Add/collapse buttons only shown when visible */}
             {visible && (
               <div className="ms-auto d-flex align-items-center gap-2 pe-2">
                 <OverlayTrigger
@@ -205,6 +223,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
             )}
           </div>
 
+          {/* Patient links (desktop) */}
           <Collapse in={patientsOpen && visible}>
             <div className="w-100">
               {patientList.map((name, index) => (
@@ -228,6 +247,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           </Collapse>
         </Nav>
 
+        {/* Modal for adding new patient */}
         <AddPatientModal
           show={showAddModal}
           onClose={() => setShowAddModal(false)}
