@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, jsonify, request
+from intent_classifier import classify_intent
 from flask_cors import CORS  
 import subprocess
 import os
@@ -45,18 +46,26 @@ def prediction():
 
     patient_id = request.args.get('patient_id')
     if not patient_id:
+        is_processing = False
         return jsonify({'message': 'Missing patient ID'}), 400
 
     patient_dir = os.path.join('new-data', 'patients', patient_id)
     output_dir = os.path.join('predictions', f'{patient_id}')
 
-    # ✅ Ensure the base predictions/ folder exists
+    # Check if patient folder exists and has files
+    if not os.path.exists(patient_dir) or not os.listdir(patient_dir):
+        is_processing = False
+        return jsonify({
+            'message': f"No data found for patient '{patient_id}'. Please upload files first.",
+            'status': 'error'
+        }), 400
+
     os.makedirs('predictions', exist_ok=True)
-    os.makedirs(output_dir, exist_ok=True)  # optional: ensure output folder too
+    os.makedirs(output_dir, exist_ok=True)
 
     try:
         result = subprocess.run(
-            ['python', 'predict.py', patient_dir, output_dir],
+            ['python', 'UNETKBP/predict.py', patient_dir, output_dir],
             capture_output=True, text=True
         )
         print("STDOUT:", result.stdout)
@@ -66,9 +75,10 @@ def prediction():
 
         return jsonify({'message': 'Prediction complete', 'status': 'success'})
     except subprocess.CalledProcessError as e:
-        return jsonify({'message': 'Error fetching prediction results', 'error': str(e)}), 500
+        return jsonify({'message': 'Prediction failed.', 'error': str(e)}), 500
     finally:
         is_processing = False
+
 
 
 
@@ -95,6 +105,12 @@ def serve_prediction(patient_id, filename):
     return send_from_directory(os.path.join('predictions', patient_id, 'prediction'), filename)
 
 
+@app.route("/api/classify", methods=["POST"])
+def classify():
+    data = request.get_json()
+    message = data.get("message", "")
+    intent, score = classify_intent(message)
+    return jsonify({"intent": intent, "score": score})
 
 
 if __name__ == '__main__':

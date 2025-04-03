@@ -14,7 +14,8 @@ from csv_to_image_slices import convert_patient_to_images
 prediction_name = "pytorch"
 epoch = 200
 stage = "coarse"
-results_dir = Path("results")
+results_dir = Path(__file__).parent / "results"
+
 
 def predict_single_patient(patient_dir, output_base):
     patient_dir = Path(patient_dir)

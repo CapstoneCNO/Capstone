@@ -57,16 +57,25 @@ const PatientPage: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    setChatMessages((prev) => [...prev, { text: message, sender: 'user' }]);
+    const userMsg = message.trim();
+    setChatMessages((prev) => [...prev, { text: userMsg, sender: 'user' }]);
     setMessage('');
-
-    if (message.toLowerCase().includes('generate predicted dose')) {
+  
+    const res = await fetch('/api/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userMsg }),
+    });
+    const data = await res.json();
+  
+    if (data.intent === 'predict_dose' && data.score > 0.7) {
       setChatMessages((prev) => [...prev, { text: 'Generating predicted dose...', sender: 'bot' }]);
       await handleGeneratePrediction();
     } else {
-      setChatMessages((prev) => [...prev, { text: 'I didn\'t understand that. Try again.', sender: 'bot' }]);
+      setChatMessages((prev) => [...prev, { text: 'I didn’t understand that. Try again.', sender: 'bot' }]);
     }
   };
+  
 
   const handleGeneratePrediction = async () => {
     try {
@@ -86,10 +95,10 @@ const PatientPage: React.FC = () => {
         setImageUrls(imageData);
         setShowSlider(true);
       } else {
-        setChatMessages((prev) => [
-          ...prev,
-          { text: 'Prediction failed. Please try again.', sender: 'bot' }
-        ]);
+        setChatMessages((prev) => [...prev, {
+          text: `Prediction failed: ${data.message || "Unknown error."}`,
+          sender: 'bot'
+        }]);
       }
     } catch (error) {
       console.error(error);
