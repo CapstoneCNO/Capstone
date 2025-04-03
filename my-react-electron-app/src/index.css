@@ -12,14 +12,13 @@
 /* ========== GENERAL LAYOUT ========= */
 /* ----------------------------------- */
 .sidebar {
-  
   width: 260px;
   height: 100vh;
   background-color: var(--bs-navy);
   border-right: 1px solid #dee2e6;
   transition: width 0.3s ease, padding 0.3s ease;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); /* shadow to right */
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .sidebar.collapsed {
@@ -222,7 +221,6 @@
   border-color: #0d3d6d !important;
 }
 
-
 /* ----------------------------------- */
 /* ========== MODAL STYLING ========== */
 /* ----------------------------------- */
@@ -284,17 +282,66 @@
   border-bottom: 1px solid #dee2e6;
 }
 
-.patient-card {
-  transition: all 0.3s ease-in-out;
+/* Contenedor de los mensajes */
+.chat-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 500px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Añadido para espacio entre los mensajes */
 }
 
-.patient-card:hover {
-  transform: translateY(-10px); /* Move the card up slightly */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add shadow */
+/* Mensaje genérico */
+.chat-message {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: inline-block;
+  width: 100%; /* Limita el ancho del mensaje */
+  word-wrap: break-word; /* Rompe las palabras largas */
 }
 
-@media (max-width: 768px) {
-  .get-started-button {
-    margin-bottom: 20px; 
-  }
+/* Mensaje del usuario */
+.chat-message.user {
+  background-color: #53c89b;
+  color: white;
+  text-align: right;
+  width: 100%; /* Asegura que el mensaje del usuario tenga el mismo ancho */
+}
+
+/* Mensaje del bot */
+.chat-message.bot {
+  background-color: #f1f1f1;
+  color: black;
+  text-align: left;
+  width: 100%; /* Asegura que el mensaje del bot tenga el mismo ancho */
+}
+
+/* Estilo para el contenedor del input y el botón */
+.message-input-container {
+  display: flex;
+  width: 100%;
+  gap: 10px; /* Space between input and button */
+  margin-bottom: 10px;
+}
+
+/* Estilo para el cuadro de entrada del mensaje */
+.chat-container input {
+  flex-grow: 1;  /* Make the input grow to take up available space */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 0; /* Remove bottom margin to align with button */
+}
+
+/* Estilo para el botón de enviar */
+.chat-container button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
 }

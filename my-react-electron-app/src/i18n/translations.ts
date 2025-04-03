@@ -17,7 +17,7 @@ export const translations = {
       mri: "MRI Imaging",
       radiation: "Radiation Therapy",
     },
-    predict: "Predict",
+    send: "Send",
     predicting: "Predicting...",
     upload_success: "Files uploaded successfully!",
     upload_fail: "An error occurred while uploading files.",
@@ -32,9 +32,13 @@ export const translations = {
     last_name: "Last Name",
     enter_first_name: "Enter first name",
     enter_last_name: "Enter last name",
-    cancel: "Cancel",
+    cancel: "Clear", // Translation for Clear button
     register: "Register",
-
+    chat_with_patient: "Chat with Patient",
+    load_more: "Load More",
+    upload_files: "Upload Files",
+    enter_message: "Enter your message here...",
+    generate_dose: "Generate Predicted Dose", // Additional translation for generating dose
   },
 
   fr: {
@@ -55,7 +59,7 @@ export const translations = {
       mri: "Imagerie par IRM",
       radiation: "Radiothérapie",
     },
-    predict: "Prédire",
+    send: "Envoyer",
     predicting: "Prédiction...",
     upload_success: "Fichiers téléchargés avec succès !",
     upload_fail: "Une erreur est survenue lors du téléchargement des fichiers.",
@@ -70,9 +74,13 @@ export const translations = {
     last_name: "Nom de famille",
     enter_first_name: "Entrez le prénom",
     enter_last_name: "Entrez le nom de famille",
-    cancel: "Annuler",
+    cancel: "Effacer", // Translation for Clear button
     register: "Enregistrer",
-
+    chat_with_patient: "Discuter avec le patient",
+    load_more: "Charger Plus",
+    upload_files: "Télécharger les fichiers",
+    enter_message: "Entrez votre message ici...",
+    generate_dose: "Générer la dose prédite", // Additional translation for generating dose
   },
 } as const;
 
