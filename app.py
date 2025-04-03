@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory, jsonify, request
-from intent_classifier import classify_intent
+from intent_classifier import classify_intent, respond_to_intent
 from flask_cors import CORS  
 import subprocess
 import os
@@ -50,7 +50,7 @@ def prediction():
         return jsonify({'message': 'Missing patient ID'}), 400
 
     patient_dir = os.path.join('new-data', 'patients', patient_id)
-    output_dir = os.path.join('predictions', f'{patient_id}')
+    output_dir = os.path.join('predictions', patient_id, patient_id)  # Note double folder
 
     # Check if patient folder exists and has files
     if not os.path.exists(patient_dir) or not os.listdir(patient_dir):
@@ -60,16 +60,24 @@ def prediction():
             'status': 'error'
         }), 400
 
+    # ✅ Check if prediction already exists
+    existing_pred = os.path.exists(os.path.join(output_dir, 'prediction'))
+    if existing_pred:
+        is_processing = False
+        return jsonify({'message': 'Prediction already exists.', 'status': 'exists'})
+
+    # Create folders
     os.makedirs('predictions', exist_ok=True)
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(os.path.join('predictions', patient_id), exist_ok=True)
 
     try:
         result = subprocess.run(
-            ['python', 'UNETKBP/predict.py', patient_dir, output_dir],
+            ['python', 'UNETKBP/predict.py', patient_dir, os.path.join('predictions', patient_id)],
             capture_output=True, text=True
         )
         print("STDOUT:", result.stdout)
         print("STDERR:", result.stderr)
+
         if result.returncode != 0:
             raise subprocess.CalledProcessError(result.returncode, result.args)
 
@@ -78,6 +86,7 @@ def prediction():
         return jsonify({'message': 'Prediction failed.', 'error': str(e)}), 500
     finally:
         is_processing = False
+
 
 
 
@@ -104,14 +113,20 @@ def serve_dose(patient_id, filename):
 def serve_prediction(patient_id, filename):
     return send_from_directory(os.path.join('predictions', patient_id, 'prediction'), filename)
 
-
 @app.route("/api/classify", methods=["POST"])
 def classify():
     data = request.get_json()
     message = data.get("message", "")
-    intent, score = classify_intent(message)
-    return jsonify({"intent": intent, "score": score})
+    patient_id = data.get("patient_id", "")
 
+    intent, score = classify_intent(message)
+    extra_response = respond_to_intent(intent, patient_id) if intent == "help" else None
+
+    return jsonify({
+        "intent": intent,
+        "score": score,
+        "bot_response": extra_response
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

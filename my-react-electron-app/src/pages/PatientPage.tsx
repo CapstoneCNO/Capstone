@@ -110,48 +110,68 @@ const PatientPage: React.FC = () => {
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userMsg }),
+      body: JSON.stringify({ message: userMsg, patient_id: id }),
     });
     const data = await res.json();
-
+    
     if (data.intent === 'predict_dose' && data.score > 0.7) {
       setChatMessages((prev) => [...prev, { text: 'Generating predicted dose...', sender: 'bot' }]);
       await handleGeneratePrediction();
+    } else if (data.intent === 'help' && data.bot_response) {
+      setChatMessages((prev) => [...prev, { text: data.bot_response, sender: 'bot' }]);
     } else {
       setChatMessages((prev) => [...prev, { text: 'I didn’t understand that. Try again.', sender: 'bot' }]);
     }
+    
   };
 
   const handleGeneratePrediction = async () => {
     try {
       setPredicting(true);
+  
       const response = await fetch(`/api/prediction?patient_id=${id}`, { method: 'GET' });
       const data = await response.json();
-
+  
       if (response.ok) {
-        setChatMessages((prev) => [
-          ...prev,
-          { text: 'Prediction completed. Refreshing images...', sender: 'bot' }
-        ]);
-
+        if (data.status === "exists") {
+          setChatMessages((prev) => [
+            ...prev,
+            { text: "A previous treatment was found. Displaying results...", sender: "bot" }
+          ]);
+        } else {
+          setChatMessages((prev) => [
+            ...prev,
+            { text: "Prediction completed. Refreshing images...", sender: "bot" }
+          ]);
+        }
+  
         const imageResponse = await fetch(`/api/images/${id}`);
-        if (!imageResponse.ok) throw new Error('Failed to reload images');
+        if (!imageResponse.ok) throw new Error("Failed to reload images");
+  
         const imageData: ImageUrls = await imageResponse.json();
         setImageUrls(imageData);
         setShowSlider(true);
+        setShowImages(true);
       } else {
-        setChatMessages((prev) => [...prev, {
-          text: `Prediction failed: ${data.message || "Unknown error."}`,
-          sender: 'bot'
-        }]);
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            text: `Prediction failed: ${data.message || "Unknown error."}`,
+            sender: "bot"
+          }
+        ]);
       }
     } catch (error) {
       console.error(error);
-      setChatMessages((prev) => [...prev, { text: 'An error occurred. Please try again.', sender: 'bot' }]);
+      setChatMessages((prev) => [
+        ...prev,
+        { text: "An error occurred. Please try again.", sender: "bot" }
+      ]);
     } finally {
       setPredicting(false);
     }
   };
+  
 
   const handleSliderChange = (newValue: number) => {
     setIndex(newValue);
@@ -160,6 +180,7 @@ const PatientPage: React.FC = () => {
   const handleClearChat = () => {
     setChatMessages([]);
     setMessage('');
+    setShowSlider(false);
   };
 
   if (loading) return <div>Loading...</div>;
