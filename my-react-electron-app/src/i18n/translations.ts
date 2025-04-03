@@ -7,7 +7,7 @@ export const translations = {
     patient_page_title: "Patient",
     last_updated: "Last updated: 22 hours ago",
     share: "Share",
-    profile: "john",
+    profile: "John",
     language: "Language",
     welcome_heading: "Welcome John!",
     welcome_subtext: "Lorem ipsum lorem lorem lorem",
@@ -17,7 +17,6 @@ export const translations = {
       mri: "MRI Imaging",
       radiation: "Radiation Therapy",
     },
-    // 👇 NEW: PatientPage
     predict: "Predict",
     predicting: "Predicting...",
     upload_success: "Files uploaded successfully!",
@@ -28,7 +27,16 @@ export const translations = {
     dose_images: "Dose Images",
     prediction_images: "Prediction Images",
     load_files: "Load Files",
+    register_patient: "Register Patient",
+    first_name: "First Name",
+    last_name: "Last Name",
+    enter_first_name: "Enter first name",
+    enter_last_name: "Enter last name",
+    cancel: "Cancel",
+    register: "Register",
+
   },
+
   fr: {
     home: "Accueil",
     patients: "Patients",
@@ -47,7 +55,6 @@ export const translations = {
       mri: "Imagerie par IRM",
       radiation: "Radiothérapie",
     },
-    // 👇 NOUVEAU : PatientPage
     predict: "Prédire",
     predicting: "Prédiction...",
     upload_success: "Fichiers téléchargés avec succès !",
@@ -58,6 +65,14 @@ export const translations = {
     dose_images: "Images de dose",
     prediction_images: "Images de prédiction",
     load_files: "Charger les fichiers",
+    register_patient: "Enregistrer le patient",
+    first_name: "Prénom",
+    last_name: "Nom de famille",
+    enter_first_name: "Entrez le prénom",
+    enter_last_name: "Entrez le nom de famille",
+    cancel: "Annuler",
+    register: "Enregistrer",
+
   },
 } as const;
 

@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { useTopbar } from '../components/Layout';
 import { useLanguage } from '../hooks/LanguageContext';
+import { Button as BsButton } from 'react-bootstrap'; // Bootstrap Button import
 
 interface ImageUrls {
   ct: string[];
@@ -42,9 +43,13 @@ const PatientPage: React.FC = () => {
 
   useEffect(() => {
     setTopbarActions(
-      <Button variant="outlined" onClick={() => document.getElementById('file-input')?.click()}>
+      <BsButton
+        variant="success"
+        size="sm"
+        onClick={() => document.getElementById('file-input')?.click()}
+      >
         {t("load_files")}
-      </Button>
+      </BsButton>
     );
 
     return () => setTopbarActions(null);
@@ -87,6 +92,11 @@ const PatientPage: React.FC = () => {
 
       if (response.ok) {
         alert(t("upload_success"));
+        // Refresh image URLs after upload
+        const imageResponse = await fetch(`/api/images/${id}`);
+        if (!imageResponse.ok) throw new Error('Failed to reload images');
+        const imageData: ImageUrls = await imageResponse.json();
+        setImageUrls(imageData);
       } else {
         const data = await response.json();
         alert(`${t("upload_fail")}: ${data.message}`);

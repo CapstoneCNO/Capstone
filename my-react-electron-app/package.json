@@ -14,12 +14,12 @@
     "start": "npm run build:electron && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron dist-electron/main.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run start\""
   },
-
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.0",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "express": "^4.21.2",
     "python-shell": "^5.0.0",
     "react": "^19.0.0",
