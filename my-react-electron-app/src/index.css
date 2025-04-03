@@ -284,3 +284,17 @@
   border-bottom: 1px solid #dee2e6;
 }
 
+.patient-card {
+  transition: all 0.3s ease-in-out;
+}
+
+.patient-card:hover {
+  transform: translateY(-10px); /* Move the card up slightly */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add shadow */
+}
+
+@media (max-width: 768px) {
+  .get-started-button {
+    margin-bottom: 20px; 
+  }
+}

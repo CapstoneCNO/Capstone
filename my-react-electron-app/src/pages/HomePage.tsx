@@ -24,7 +24,9 @@ const HomePage = () => {
             <Col md={8}>
               <h2 className="fw-bold mb-3">{t("welcome_heading") ?? "Welcome John!"}</h2>
               <p>{t("welcome_subtext") ?? "Lorem ipsum lorem lorem lorem"}</p>
-              <Button variant="primary">{t("get_started") ?? "Get started"}</Button>
+              <Button variant="primary" className="get-started-button">
+                {t("get_started") ?? "Get started"}
+              </Button>
             </Col>
             <Col md={4}>
               <img src={machine} alt="CT Machine" className="img-fluid rounded" />
