@@ -48,9 +48,55 @@ const PatientPage: React.FC = () => {
     setChatMessages([]);
   }, [id]);
 
+  // Inject "Load Files" button into the topbar
   useEffect(() => {
-    setTopbarActions(null); // Removed Load Files button
-  }, [setTopbarActions]);
+    setTopbarActions(
+      <BsButton
+        size="sm"
+        variant="primary"
+        onClick={() => document.getElementById('file-input')?.click()}
+      >
+        {t('load_files')}
+      </BsButton>
+    );
+    return () => setTopbarActions(null);
+  }, [setTopbarActions, t]);
+
+  const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !id) return;
+
+    const formData = new FormData();
+    Array.from(event.target.files).forEach(file => {
+      formData.append('files', file);
+    });
+
+    setChatMessages(prev => [...prev, { text: 'Uploading files...', sender: 'bot' }]);
+
+    try {
+      const response = await fetch(`/api/upload/${id}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        setChatMessages(prev => [...prev, {
+          text: 'Files uploaded successfully! You can now ask me to generate a prediction.',
+          sender: 'bot'
+        }]);
+      } else {
+        const data = await response.json();
+        setChatMessages(prev => [...prev, {
+          text: `Upload failed: ${data.message}`,
+          sender: 'bot'
+        }]);
+      }
+    } catch {
+      setChatMessages(prev => [...prev, {
+        text: 'Upload failed. Please try again.',
+        sender: 'bot'
+      }]);
+    }
+  };
 
   const handleMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -60,14 +106,14 @@ const PatientPage: React.FC = () => {
     const userMsg = message.trim();
     setChatMessages((prev) => [...prev, { text: userMsg, sender: 'user' }]);
     setMessage('');
-  
+
     const res = await fetch('/api/classify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: userMsg }),
     });
     const data = await res.json();
-  
+
     if (data.intent === 'predict_dose' && data.score > 0.7) {
       setChatMessages((prev) => [...prev, { text: 'Generating predicted dose...', sender: 'bot' }]);
       await handleGeneratePrediction();
@@ -75,7 +121,6 @@ const PatientPage: React.FC = () => {
       setChatMessages((prev) => [...prev, { text: 'I didn’t understand that. Try again.', sender: 'bot' }]);
     }
   };
-  
 
   const handleGeneratePrediction = async () => {
     try {
@@ -122,7 +167,17 @@ const PatientPage: React.FC = () => {
 
   return (
     <div>
-      {/* Patient name with Bootstrap person-circle icon in navy */}
+      {/* Hidden file input */}
+      <input
+        id="file-input"
+        type="file"
+        multiple
+        style={{ display: 'none' }}
+        onChange={handleFileUpload}
+        accept="image/*"
+      />
+
+      {/* Patient header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
         <div
           style={{
@@ -134,7 +189,7 @@ const PatientPage: React.FC = () => {
             justifyContent: 'center',
             alignItems: 'center',
             fontSize: '26px',
-            color: '#001f3f', // Navy color
+            color: '#001f3f',
             border: '1px solid #ccc',
           }}
         >
@@ -143,11 +198,13 @@ const PatientPage: React.FC = () => {
         <h2 style={{ margin: 0 }}>{t('patient_page_title')}: {id}</h2>
       </div>
 
+      {/* Chat + Images */}
       {showImages && (
         <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', maxHeight: '500px', overflowY: 'auto' }}>
           <div style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold' }}>
             {t('chat_with_patient')}
           </div>
+
           <div style={{ marginBottom: '20px' }}>
             {chatMessages.map((msg, index) => (
               <div
@@ -168,6 +225,7 @@ const PatientPage: React.FC = () => {
             ))}
           </div>
 
+          {/* Chat input */}
           <div style={{ display: 'flex', gap: '10px' }}>
             <input
               type="text"
@@ -201,6 +259,7 @@ const PatientPage: React.FC = () => {
             </BsButton>
           </div>
 
+          {/* Image display */}
           {showSlider && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
@@ -230,6 +289,7 @@ const PatientPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* Slider */}
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
                 <Slider
                   value={index}
