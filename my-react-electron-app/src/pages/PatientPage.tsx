@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Slider from '@mui/material/Slider';
 import { useTopbar } from '../components/Layout';
 import { useLanguage } from '../hooks/LanguageContext';
-import { Button as BsButton } from 'react-bootstrap'; // Bootstrap Button import
+import { Button as BsButton } from 'react-bootstrap';
 
 interface ImageUrls {
   ct: string[];
@@ -33,7 +33,7 @@ const PatientPage: React.FC = () => {
         if (!response.ok) throw new Error('Network response was not ok');
         const data: ImageUrls = await response.json();
         setImageUrls(data);
-        setShowImages(true); // Show images after they are loaded
+        setShowImages(true);
       } catch {
         setError('Failed to load images');
       } finally {
@@ -44,35 +44,22 @@ const PatientPage: React.FC = () => {
     fetchImageUrls();
   }, [id]);
 
-  // Clear the chat when switching users
   useEffect(() => {
-    setChatMessages([]); // Reset the chat messages on user switch
+    setChatMessages([]);
   }, [id]);
 
   useEffect(() => {
-    setTopbarActions(
-      <BsButton
-        variant="success"
-        size="sm"
-        onClick={() => document.getElementById('file-input')?.click()}
-      >
-        {t('load_files')}
-      </BsButton>
-    );
-
-    return () => setTopbarActions(null);
-  }, [setTopbarActions, t]);
+    setTopbarActions(null); // Removed Load Files button
+  }, [setTopbarActions]);
 
   const handleMessageChange = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
 
   const handleSendMessage = async () => {
-    // Add user's message to chat
     setChatMessages((prev) => [...prev, { text: message, sender: 'user' }]);
-    setMessage(''); // Clear the input field
+    setMessage('');
 
-    // Respond with the bot message
     if (message.toLowerCase().includes('generate predicted dose')) {
       setChatMessages((prev) => [...prev, { text: 'Generating predicted dose...', sender: 'bot' }]);
       await handleGeneratePrediction();
@@ -85,7 +72,7 @@ const PatientPage: React.FC = () => {
     try {
       setPredicting(true);
       const response = await fetch(`/api/prediction?patient_id=${id}`, { method: 'GET' });
-      const data = await response.json(); // Using the fetched data if necessary
+      const data = await response.json();
 
       if (response.ok) {
         setChatMessages((prev) => [
@@ -93,13 +80,10 @@ const PatientPage: React.FC = () => {
           { text: 'Prediction completed. Refreshing images...', sender: 'bot' }
         ]);
 
-        // Fetch image URLs after prediction
         const imageResponse = await fetch(`/api/images/${id}`);
         if (!imageResponse.ok) throw new Error('Failed to reload images');
         const imageData: ImageUrls = await imageResponse.json();
-        setImageUrls(imageData);  // Update state with new image URLs
-
-        // Show the slider and images after prediction
+        setImageUrls(imageData);
         setShowSlider(true);
       } else {
         setChatMessages((prev) => [
@@ -119,40 +103,6 @@ const PatientPage: React.FC = () => {
     setIndex(newValue);
   };
 
-  // Handle file upload status in the chatbot
-  const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || !id) return;
-
-    const formData = new FormData();
-    Array.from(event.target.files).forEach(file => {
-      formData.append('files', file);
-    });
-
-    setChatMessages((prev) => [...prev, { text: 'Uploading files...', sender: 'bot' }]);
-
-    try {
-      const response = await fetch(`/api/upload/${id}`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        setChatMessages((prev) => [...prev, { text: 'Files uploaded successfully! What would you like me to do next?', sender: 'bot' }]);
-        // Fetch image URLs after upload
-        const imageResponse = await fetch(`/api/images/${id}`);
-        if (!imageResponse.ok) throw new Error('Failed to reload images');
-        const imageData: ImageUrls = await imageResponse.json();
-        setImageUrls(imageData);  // Update image URLs state
-      } else {
-        const data = await response.json();
-        setChatMessages((prev) => [...prev, { text: `File upload failed: ${data.message}`, sender: 'bot' }]);
-      }
-    } catch (error) {
-      setChatMessages((prev) => [...prev, { text: 'File upload failed. Please try again.', sender: 'bot' }]);
-    }
-  };
-
-  // Handle clearing the chat
   const handleClearChat = () => {
     setChatMessages([]);
     setMessage('');
@@ -163,18 +113,27 @@ const PatientPage: React.FC = () => {
 
   return (
     <div>
-      <h2>{t('patient_page_title')}: {id}</h2>
+      {/* Patient name with Bootstrap person-circle icon in navy */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div
+          style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            backgroundColor: '#e6f0f8',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontSize: '26px',
+            color: '#001f3f', // Navy color
+            border: '1px solid #ccc',
+          }}
+        >
+          <i className="bi bi-person-circle" />
+        </div>
+        <h2 style={{ margin: 0 }}>{t('patient_page_title')}: {id}</h2>
+      </div>
 
-      <input
-        id="file-input"
-        type="file"
-        multiple
-        style={{ display: 'none' }}
-        accept="image/*"
-        onChange={handleFileUpload} // Added file upload handler
-      />
-
-      {/* Chat Interface */}
       {showImages && (
         <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', maxHeight: '500px', overflowY: 'auto' }}>
           <div style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold' }}>
@@ -200,7 +159,6 @@ const PatientPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Input and Send + Clear Buttons */}
           <div style={{ display: 'flex', gap: '10px' }}>
             <input
               type="text"
@@ -217,7 +175,7 @@ const PatientPage: React.FC = () => {
             />
             <BsButton
               onClick={handleSendMessage}
-              disabled={predicting} // Disable the button while predicting
+              disabled={predicting}
               variant="success"
               size="sm"
               style={{ padding: '10px 20px' }}
@@ -234,49 +192,47 @@ const PatientPage: React.FC = () => {
             </BsButton>
           </div>
 
-          {/* Show Titles and Images after prediction inside the Chatbox */}
           {showSlider && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
-              <div style={{ width: '30%', textAlign: 'center' }}>
-                <h3>{t('ct_images')}:</h3>
-                <img
-                  src={`http://localhost:5000${imageUrls.ct[index]}`}
-                  alt={`CT slice ${index + 1}`}
-                  style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
-                />
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
+                <div style={{ width: '30%', textAlign: 'center' }}>
+                  <h3>{t('ct_images')}:</h3>
+                  <img
+                    src={`http://localhost:5000${imageUrls.ct[index]}`}
+                    alt={`CT slice ${index + 1}`}
+                    style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
+                  />
+                </div>
+                <div style={{ width: '30%', textAlign: 'center' }}>
+                  <h3>{t('dose_images')}:</h3>
+                  <img
+                    src={`http://localhost:5000${imageUrls.dose[index]}`}
+                    alt={`Dose slice ${index + 1}`}
+                    style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
+                  />
+                </div>
+                <div style={{ width: '30%', textAlign: 'center' }}>
+                  <h3>{t('prediction_images')}:</h3>
+                  <img
+                    src={`http://localhost:5000${imageUrls.prediction[index]}`}
+                    alt={`Prediction slice ${index + 1}`}
+                    style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
+                  />
+                </div>
               </div>
-              <div style={{ width: '30%', textAlign: 'center' }}>
-                <h3>{t('dose_images')}:</h3>
-                <img
-                  src={`http://localhost:5000${imageUrls.dose[index]}`}
-                  alt={`Dose slice ${index + 1}`}
-                  style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
-                />
-              </div>
-              <div style={{ width: '30%', textAlign: 'center' }}>
-                <h3>{t('prediction_images')}:</h3>
-                <img
-                  src={`http://localhost:5000${imageUrls.prediction[index]}`}
-                  alt={`Prediction slice ${index + 1}`}
-                  style={{ width: '100%', maxHeight: '180px', objectFit: 'contain' }}
-                />
-              </div>
-            </div>
-          )}
 
-          {/* Slider for Images */}
-          {showSlider && (
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <Slider
-                value={index}
-                min={0}
-                max={imageUrls.ct.length - 1}
-                step={1}
-                onChange={(_, newValue) => handleSliderChange(newValue as number)}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value) => `Slice ${value + 1}`}
-              />
-            </div>
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <Slider
+                  value={index}
+                  min={0}
+                  max={imageUrls.ct.length - 1}
+                  step={1}
+                  onChange={(_, newValue) => setIndex(newValue as number)}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `Slice ${value + 1}`}
+                />
+              </div>
+            </>
           )}
         </div>
       )}

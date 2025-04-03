@@ -83,7 +83,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
                     className={({ isActive }) =>
                       [
                         "nav-item-custom d-flex align-items-center gap-2 text-start",
-                        isActive && "active-nav"
+                        isActive && "active-nav",
                       ]
                         .filter(Boolean)
                         .join(" ")
@@ -111,10 +111,8 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           minHeight: "100vh",
         }}
       >
-        <div className="d-flex justify-content-between align-items-center mb-3 w-100">
-          {visible && (
-            <h5 className="fw-bold mb-0 w-100 text-center">ContourCT</h5>
-          )}
+        {/* Logo and Toggle (hamburger on left now) */}
+        <div className="d-flex align-items-center mb-3 w-100 gap-2">
           <button
             className="icon-button"
             onClick={() =>
@@ -123,6 +121,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
           >
             <i className="bi bi-list nav-icon"></i>
           </button>
+          {visible && <h5 className="fw-bold mb-0 text-white">ContourCT</h5>}
         </div>
 
         {visible && (
@@ -145,7 +144,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
                 [
                   "nav-item-custom mb-2 d-flex align-items-center",
                   visible ? "ps-3 justify-content-start" : "justify-content-center",
-                  isActive && "active-nav"
+                  isActive && "active-nav",
                 ]
                   .filter(Boolean)
                   .join(" ")
@@ -167,9 +166,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
               <div className="ms-auto d-flex align-items-center gap-2 pe-2">
                 <OverlayTrigger
                   placement="top"
-                  overlay={
-                    <Tooltip id="add-patient-tooltip">{t("add_patient")}</Tooltip>
-                  }
+                  overlay={<Tooltip id="add-patient-tooltip">{t("add_patient")}</Tooltip>}
                 >
                   <button
                     className="icon-button"
@@ -217,7 +214,7 @@ const Sidebar = ({ visible }: { visible: boolean }) => {
                   className={({ isActive }) =>
                     [
                       "nav-item-custom ps-4 d-flex align-items-center gap-2 text-start",
-                      isActive && "active-nav"
+                      isActive && "active-nav",
                     ]
                       .filter(Boolean)
                       .join(" ")
