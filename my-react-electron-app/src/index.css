@@ -12,11 +12,14 @@
 /* ========== GENERAL LAYOUT ========= */
 /* ----------------------------------- */
 .sidebar {
+  
   width: 260px;
   height: 100vh;
   background-color: var(--bs-navy);
   border-right: 1px solid #dee2e6;
   transition: width 0.3s ease, padding 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); /* shadow to right */
+  z-index: 1000; 
 }
 
 .sidebar.collapsed {
@@ -24,6 +27,7 @@
   padding: 1rem 0.5rem;
   overflow: hidden;
   align-items: center;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); /* same shadow */
 }
 
 .topbar {
@@ -162,31 +166,62 @@
 }
 
 .btn-primary {
-  background-color: var(--bs-green);
-  border-color: var(--bs-green);
-  color: #fff;
-  box-shadow: none;
+  background-color: #53c89b !important;
+  border-color: #53c89b !important;
+  color: #fff !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-  background-color: var(--bs-navy);
-  border-color: var(--bs-navy);
-  color: #fff;
+.btn-primary:hover {
+  background-color: #0d3d6d !important;
+  border-color: #0d3d6d !important;
+  color: white !important;
 }
 
 .btn-secondary {
-  background-color: var(--bs-navy);
-  border-color: var(--bs-navy);
-  color: white;
+  background-color: #0d3d6d !important;
+  border-color: #0d3d6d !important;
+  color: #fff !important;
 }
 
 .btn-secondary:hover {
-  background-color: var(--bs-green);
-  border-color: var(--bs-green);
-  color: #000;
+  background-color: #53c89b !important;
+  border-color: #53c89b !important;
+  color: white !important;
 }
+
+.btn-success {
+  background-color: #53c89b !important; /* Custom green */
+  border-color: #53c89b !important;
+  color: #0d3d6d !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background-color: #0d3d6d !important;
+  border-color: #0d3d6d !important;
+  color: white !important;
+}
+
+.btn-outline-light.btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+
+  color: #0d3d6d !important;
+  border: None !important;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-light.btn-sm:hover,
+.btn-outline-light.btn-sm:focus,
+.btn-outline-light.btn-sm:active {
+  background-color: #0d3d6d !important;
+  color: white !important;
+  border-color: #0d3d6d !important;
+}
+
 
 /* ----------------------------------- */
 /* ========== MODAL STYLING ========== */
@@ -194,12 +229,15 @@
 .modal-content {
   background-color: #ffffff;
   border: none;
-  box-shadow: 0 0 0 5px var(--navy);
+  box-shadow: none;
 }
 
 .modal-header {
-  background-color: var(--bs-green);
-  color: var(--bs-navy);
+  background-color: #53c89b !important;
+  color: var(--bs-navy) !important;
+  border-bottom: none !important;
+  background-image: none !important; 
+  box-shadow: none !important;
 }
 
 .modal-title {
@@ -245,3 +283,4 @@
   overflow-y: auto;
   border-bottom: 1px solid #dee2e6;
 }
+
