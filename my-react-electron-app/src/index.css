@@ -1,23 +1,22 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
-
+/* ===================================== */
+/*            GLOBAL VARIABLES           */
+/* ===================================== */
 :root {
   --green: #53c89b;
-  --accent-green: #53c89b;
   --navy: #0d3d6d;
   --bs-navy: #11263d;
-  --bs-green: #53c89b;
 }
 
-/* ----------------------------------- */
-/* ========== GENERAL LAYOUT ========= */
-/* ----------------------------------- */
+/* ===================================== */
+/*            GENERAL LAYOUT             */
+/* ===================================== */
 .sidebar {
   width: 260px;
   height: 100vh;
   background-color: var(--bs-navy);
   border-right: 1px solid #dee2e6;
   transition: width 0.3s ease, padding 0.3s ease;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); /* shadow to right */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
@@ -26,7 +25,7 @@
   padding: 1rem 0.5rem;
   overflow: hidden;
   align-items: center;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15); /* same shadow */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .topbar {
@@ -39,9 +38,9 @@
   background-color: var(--navy) !important;
 }
 
-/* ----------------------------------- */
-/* ========== SEARCH BAR ============ */
-/* ----------------------------------- */
+/* ===================================== */
+/*             SEARCH BAR                */
+/* ===================================== */
 .search-bar,
 .sidebar .form-control {
   font-size: 0.9rem;
@@ -62,9 +61,9 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* ----------------------------------- */
-/* ========== NAV ITEMS ============= */
-/* ----------------------------------- */
+/* ===================================== */
+/*              NAV ITEMS                */
+/* ===================================== */
 .nav-item-custom {
   padding: 0.5rem 0.75rem;
   width: 100%;
@@ -75,19 +74,15 @@
   color: white;
 }
 
-.nav-item-custom:hover {
-  color: var(--accent-green);
-  background-color: transparent;
-}
-
+.nav-item-custom:hover,
 .nav-item-custom:active {
-  color: var(--accent-green);
+  color: var(--green);
   background-color: transparent;
 }
 
 .nav-item-custom.active-nav,
 .nav-item-custom.active {
-  color: var(--accent-green) !important;
+  color: var(--green) !important;
 }
 
 .nav-icon,
@@ -96,9 +91,6 @@
   font-size: 1.25rem;
 }
 
-/* ----------------------------------- */
-/* ======= SIDEBAR ICONS/TEXT ======= */
-/* ----------------------------------- */
 .sidebar .nav-icon {
   min-width: 24px;
   text-align: center;
@@ -113,15 +105,14 @@
   color: white !important;
 }
 
-/* Hover color override for grouped elements */
 .sidebar .nav-item-custom:hover .nav-icon,
 .sidebar .nav-item-custom:hover .nav-text {
-  color: var(--accent-green) !important;
+  color: var(--green) !important;
 }
 
-/* ----------------------------------- */
-/* ========== ICON BUTTONS =========== */
-/* ----------------------------------- */
+/* ===================================== */
+/*              ICON BUTTONS             */
+/* ===================================== */
 .icon-button {
   background: none;
   border: none;
@@ -132,8 +123,9 @@
   cursor: pointer;
 }
 
-.icon-button:hover {
-  color: var(--accent-green);
+.icon-button:hover,
+.icon-button:active {
+  color: var(--green);
   background-color: transparent;
 }
 
@@ -142,14 +134,9 @@
   box-shadow: none;
 }
 
-.icon-button:active {
-  color: var(--accent-green);
-  transform: scale(0.96);
-}
-
-/* ----------------------------------- */
-/* ========== BOOTSTRAP BUTTONS ===== */
-/* ----------------------------------- */
+/* ===================================== */
+/*           BOOTSTRAP BUTTONS           */
+/* ===================================== */
 .btn,
 .btn:focus {
   color: white;
@@ -164,51 +151,39 @@
   border-color: var(--green);
 }
 
-.btn-primary {
-  background-color: #53c89b !important;
-  border-color: #53c89b !important;
+.btn-primary,
+.btn-success {
+  background-color: var(--green) !important;
+  border-color: var(--green) !important;
   color: #fff !important;
 }
 
-.btn-primary:hover {
-  background-color: #0d3d6d !important;
-  border-color: #0d3d6d !important;
+.btn-primary:hover,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background-color: var(--navy) !important;
+  border-color: var(--navy) !important;
   color: white !important;
 }
 
 .btn-secondary {
-  background-color: #0d3d6d !important;
-  border-color: #0d3d6d !important;
+  background-color: var(--navy) !important;
+  border-color: var(--navy) !important;
   color: #fff !important;
 }
 
 .btn-secondary:hover {
-  background-color: #53c89b !important;
-  border-color: #53c89b !important;
-  color: white !important;
-}
-
-.btn-success {
-  background-color: #53c89b !important; /* Custom green */
-  border-color: #53c89b !important;
-  color: #0d3d6d !important;
-}
-
-.btn-success:hover,
-.btn-success:focus,
-.btn-success:active {
-  background-color: #0d3d6d !important;
-  border-color: #0d3d6d !important;
-  color: white !important;
+  background-color: var(--green) !important;
+  border-color: var(--green) !important;
 }
 
 .btn-outline-light.btn-sm {
   font-size: 0.75rem;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
-
-  color: #0d3d6d !important;
-  border: None !important;
+  color: var(--navy) !important;
+  border: none !important;
   background-color: transparent;
   transition: all 0.2s ease-in-out;
 }
@@ -216,14 +191,14 @@
 .btn-outline-light.btn-sm:hover,
 .btn-outline-light.btn-sm:focus,
 .btn-outline-light.btn-sm:active {
-  background-color: #0d3d6d !important;
+  background-color: var(--navy) !important;
   color: white !important;
-  border-color: #0d3d6d !important;
+  border-color: var(--navy) !important;
 }
 
-/* ----------------------------------- */
-/* ========== MODAL STYLING ========== */
-/* ----------------------------------- */
+/* ===================================== */
+/*              MODAL STYLING           */
+/* ===================================== */
 .modal-content {
   background-color: #ffffff;
   border: none;
@@ -231,10 +206,10 @@
 }
 
 .modal-header {
-  background-color: #53c89b !important;
+  background-color: var(--green) !important;
   color: var(--bs-navy) !important;
   border-bottom: none !important;
-  background-image: none !important; 
+  background-image: none !important;
   box-shadow: none !important;
 }
 
@@ -247,9 +222,9 @@
   filter: brightness(0) saturate(100%) invert(15%) sepia(38%) saturate(2462%) hue-rotate(180deg) brightness(93%) contrast(96%);
 }
 
-/* ----------------------------------- */
-/* ========== MOBILE STYLES ========== */
-/* ----------------------------------- */
+/* ===================================== */
+/*             MOBILE STYLES            */
+/* ===================================== */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -282,7 +257,9 @@
   border-bottom: 1px solid #dee2e6;
 }
 
-/* Contenedor de los mensajes */
+/* ===================================== */
+/*            CHAT INTERFACE            */
+/* ===================================== */
 .chat-container {
   margin-top: 20px;
   padding: 15px;
@@ -292,62 +269,55 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Añadido para espacio entre los mensajes */
+  gap: 10px;
 }
 
-/* Mensaje genérico */
 .chat-message {
   padding: 10px;
   margin: 10px 0;
   border-radius: 8px;
   display: inline-block;
-  width: 100%; /* Limita el ancho del mensaje */
-  word-wrap: break-word; /* Rompe las palabras largas */
+  width: 100%;
+  word-wrap: break-word;
 }
 
-/* Mensaje del usuario */
 .chat-message.user {
-  background-color: #53c89b;
+  background-color: var(--green);
   color: white;
   text-align: right;
-  width: 100%; /* Asegura que el mensaje del usuario tenga el mismo ancho */
 }
 
-/* Mensaje del bot */
 .chat-message.bot {
   background-color: #f1f1f1;
   color: black;
   text-align: left;
-  width: 100%; /* Asegura que el mensaje del bot tenga el mismo ancho */
 }
 
-/* Estilo para el contenedor del input y el botón */
 .message-input-container {
   display: flex;
   width: 100%;
-  gap: 10px; /* Space between input and button */
+  gap: 10px;
   margin-bottom: 10px;
 }
 
-/* Estilo para el cuadro de entrada del mensaje */
 .chat-container input {
-  flex-grow: 1;  /* Make the input grow to take up available space */
+  flex-grow: 1;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
-  margin-bottom: 0; /* Remove bottom margin to align with button */
+  margin-bottom: 0;
 }
 
-/* Estilo para el botón de enviar */
 .chat-container button {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 5px;
 }
 
-/* Cards*/
-
+/* ===================================== */
+/*               CARDS                  */
+/* ===================================== */
 .patient-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -356,4 +326,10 @@
   transform: scale(1.05);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .get-started-button {
+    margin-bottom: 1rem; /* Adjust as needed */
+  }
 }

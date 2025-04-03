@@ -1,22 +1,34 @@
+# app.py
+# ------------------------------------------------------------------------------
+# This script runs the backend server for the frontend application.
+# It handles HTTP requests such as POST and GET for:
+# - Uploading patient files
+# - Running dose prediction models
+# - Serving generated image slices
+# - Handling natural language classification of user messages
+# The server interacts with both the file system and prediction subprocess.
+# ------------------------------------------------------------------------------
+
 from flask import Flask, send_from_directory, jsonify, request
 from intent_classifier import classify_intent, respond_to_intent
 from flask_cors import CORS  
 import subprocess
 import os
 
+# Initialize Flask app with static folder for serving prediction images
 app = Flask(__name__, static_folder='predictions')
 
-
-
-# Enable CORS for the entire app
+# Enable Cross-Origin Resource Sharing
 CORS(app)
 
+# Flag to prevent concurrent prediction processing
 is_processing = False
 
+# Endpoints aka URLs (routes)
+# Endpoint for uploading patient files
 @app.route('/api/upload/<patient_id>', methods=['POST'])
 def upload_files(patient_id):
     upload_dir = os.path.join('new-data', 'patients', patient_id)  
-
     os.makedirs(upload_dir, exist_ok=True)
 
     if 'files' not in request.files:
@@ -32,10 +44,12 @@ def upload_files(patient_id):
 
     return jsonify({'message': 'Files uploaded successfully'}), 200
 
+# Endpoint for serving prediction images statically
 @app.route('/predictions/<path:filename>')
 def predictions(filename):
     return send_from_directory('predictions', filename)
 
+# Endpoint to trigger prediction processing
 @app.route('/api/prediction', methods=['GET'])
 def prediction():
     global is_processing
@@ -43,16 +57,15 @@ def prediction():
         return jsonify({'message': 'Prediction already in progress. Please wait...'}), 400
 
     is_processing = True
-
     patient_id = request.args.get('patient_id')
     if not patient_id:
         is_processing = False
         return jsonify({'message': 'Missing patient ID'}), 400
 
     patient_dir = os.path.join('new-data', 'patients', patient_id)
-    output_dir = os.path.join('predictions', patient_id, patient_id)  # Note double folder
+    output_dir = os.path.join('predictions', patient_id, patient_id)  # Output format: /predictions/<id>/<id>/
 
-    # Check if patient folder exists and has files
+    # Check if uploaded data exists
     if not os.path.exists(patient_dir) or not os.listdir(patient_dir):
         is_processing = False
         return jsonify({
@@ -60,16 +73,16 @@ def prediction():
             'status': 'error'
         }), 400
 
-    # ✅ Check if prediction already exists
-    existing_pred = os.path.exists(os.path.join(output_dir, 'prediction'))
-    if existing_pred:
+    # Skip prediction if it already exists
+    if os.path.exists(os.path.join(output_dir, 'prediction')):
         is_processing = False
         return jsonify({'message': 'Prediction already exists.', 'status': 'exists'})
 
-    # Create folders
+    # Ensure output folders exist
     os.makedirs('predictions', exist_ok=True)
     os.makedirs(os.path.join('predictions', patient_id), exist_ok=True)
 
+    # Run prediction subprocess
     try:
         result = subprocess.run(
             ['python', 'UNETKBP/predict.py', patient_dir, os.path.join('predictions', patient_id)],
@@ -87,10 +100,7 @@ def prediction():
     finally:
         is_processing = False
 
-
-
-
-
+# Endpoint to retrieve all CT, dose, and prediction image URLs for a patient
 @app.route('/api/images/<patient_id>')
 def get_patient_images(patient_id):
     image_data = {
@@ -100,7 +110,7 @@ def get_patient_images(patient_id):
     }
     return jsonify(image_data)
 
-
+# Endpoints to serve individual image slices
 @app.route('/predictions/<patient_id>/ct/<filename>')
 def serve_ct(patient_id, filename):
     return send_from_directory(os.path.join('predictions', patient_id, 'ct'), filename)
@@ -113,6 +123,7 @@ def serve_dose(patient_id, filename):
 def serve_prediction(patient_id, filename):
     return send_from_directory(os.path.join('predictions', patient_id, 'prediction'), filename)
 
+# Endpoint to classify natural language input and respond with intent
 @app.route("/api/classify", methods=["POST"])
 def classify():
     data = request.get_json()
@@ -128,5 +139,6 @@ def classify():
         "bot_response": extra_response
     })
 
+# Run the Flask app on port 5000 in debug mode
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
