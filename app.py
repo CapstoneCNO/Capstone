@@ -85,7 +85,7 @@ def prediction():
     # Run prediction subprocess
     try:
         result = subprocess.run(
-            ['python', 'UNETKBP/predict.py', patient_dir, os.path.join('predictions', patient_id)],
+            ['python', 'UNETKBP/predict_single_patient.py', patient_dir, os.path.join('predictions', patient_id)],
             capture_output=True, text=True
         )
         print("STDOUT:", result.stdout)
