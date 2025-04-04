@@ -1,59 +1,60 @@
 from pathlib import Path
 import os
-import sys
-import time
 
 from provided_code.data_loader import DataLoader
 from provided_code.dose_evaluation_class import DoseEvaluator
 from provided_code.network_functions import PredictionModel
 from provided_code.utils import get_paths
+import time
+
 from csv_to_image_slices import convert_patient_to_images
-# from display_3d import display
+from display_3d import display
 
-# Configs
 prediction_name = "pytorch"
-epoch = 200
-stage = "coarse"
-results_dir = Path(__file__).parent / "results"
+epoch=200
+stage="coarse"
+results_dir = Path('results')
+num_patients = 1
 
+# Predicts patient's doses using ct scans and structure masks
+# Makes a prediction for the first num_patients patients in patients_dir
+# Dose predictions are in .csv format in prediction_paths
+# Dose predictions are in 128-slice 3D image format in ourput_dir
+def predict_with_masks(patients_dir, output_dir):
 
-def predict_single_patient(patient_dir, output_base):
-    patient_dir = Path(patient_dir)
-    patient_name = patient_dir.name  # e.g. "Carolina"
+    patients_dir = Path(patients_dir)
+    output_dir = Path(output_dir)
 
-    output_dir = Path(output_base) / f"{patient_name}"
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # get num_patients patients
+    patients = os.listdir(patients_dir)[:num_patients]
 
-    # Initialize data loader and model
-    print(f"Loading data for: {patient_name}")
-    data_loader = DataLoader([patient_dir])
-    model = PredictionModel(data_loader, results_dir, model_name=prediction_name, stage=stage)
+    patient_dirs = [Path(f"{patients_dir}/{pt}") for pt in patients]
+    output_dirs = [f"{output_dir}/{pt}-images" for pt in patients]
 
-    # Predict dose
+    # load patients into data loader, then load model and make the predictions
     start = time.time()
+    data_loader = DataLoader(patient_dirs)
+    model = PredictionModel(data_loader, results_dir, model_name=prediction_name, stage=stage)
     model.predict_dose(epoch)
     end = time.time()
-    print(f"{end - start:.2f} seconds to predict dose")
+    print(f"{end-start:.2f} seconds to predict dose")
 
-    # Locate .csv prediction file
-    prediction_csv = results_dir / prediction_name / f"{stage}-predictions" / f"{patient_name}.csv"
-    if not prediction_csv.exists():
-        raise FileNotFoundError(f"Prediction CSV not found at {prediction_csv}")
+    start = end
+    prediction_paths=[Path(f"{results_dir}/{prediction_name}/{stage}-predictions/{pt}.csv") for pt in patients]
 
-    # Convert to image slices
-    print("Converting prediction CSV to image slices...")
-    convert_patient_to_images(patient_dir, output_dir, prediction_csv)
-    print(f"Prediction slices saved in: {output_dir}")
+    # convert predictions into 128-slice 3D image
+    for i in range(num_patients):
+        convert_patient_to_images(patient_dirs[i], output_dirs[i], prediction_paths[i])
+        end = time.time()
+        print(f"{end-start:.2f} seconds to convert images")
+        # displays prediction for comparing with actual dose (requires actual dose)
+        #display(output_dirs[i])
+        start = time.time()
 
-    # Optionally show visualization
-    # display(output_dir)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python predict.py <patient_folder> <output_base_folder>")
-        sys.exit(1)
 
-    patient_folder = sys.argv[1]     # ex: new-data/patients/Carolina
-    output_base = sys.argv[2]        # ex: predictions
-
-    predict_single_patient(patient_folder, output_base)
+    # example use
+    patients_dir = 'provided-data/train-pats'
+    output_dir = 'predictions'
+    predict_with_masks(patients_dir, output_dir)
