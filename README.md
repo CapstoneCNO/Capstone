@@ -9,12 +9,16 @@ This capstone project aims to develop both a desktop and web-based software plat
 As of April 4th, 2025: The application below serves as our Proof of Concept (PoC), which integrates the landing page with the patients section. Clinicians can add a patient and interact with a chatbot to upload the patient's scans and predict a dose. Accessing patient history is also available now, and the system will launch previous predictions instead of running the model again.
 
 ## Prerequisites
-Before you begin, ensure you have the following software installed globally:
+Before you begin, ensure you have the following software installed globally.
+You can do this by installing the package.json dependencies through:  `npm install`
+
+If you encounter any errors, you can do it manually: 
 - **Node.js** - [Download Node.js](https://nodejs.org/)
 - **npm** (Comes with Node.js)
 - **Electron** - Run `npm install -g electron`
 - **React** - Note: Typically, React is installed locally per project, but if needed globally, run `npm install -g react`
 - **Vite** - Run `npm install -g vite`
+- **Bootstrap** - Run `npm install bootstrap`
 
 ## Installation
 ### Setting Up the Python Server
